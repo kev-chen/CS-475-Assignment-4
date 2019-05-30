@@ -4,6 +4,7 @@ import os
 import socket
 import threading
 import json
+import uuid
 from log import Log
 
 class Server:
@@ -42,15 +43,25 @@ class Server:
     
 
     """
-     TODO: Build logic for authenticating
+     Logic for authenticating
     """
     def handleAuthRequest(self, clientsocket, clientaddress):
         try:
-            clientname = socket.gethostbyaddr(clientaddress[0])[0] # => (hostname, alias-list, IP)
-            Log(f"Handling request from {clientname}.")
-            Log(f"{clientname} Public Key: {self.getClientPublicKey(clientname)}")
+            clientsocket.settimeout(10)
+            hostname = socket.gethostbyaddr(clientaddress[0])[0] # => (hostname, alias-list, IP)
+            Log(f"Handling request from {hostname}.")
+
+            # 1. Client sends E_s(N_c)
+            clientname = self.decrypt('', clientsocket.recv(8192).decode())
+            clientPublicKey = self.getClientPublicKey(clientname)
+            sessionKey = self.generateSessionId()
+            response = self.encrypt(clientPublicKey, f"{clientname}, {sessionKey}")
+            Log(response)
+            clientsocket.send(response.encode())
+
         except Exception as e:
             Log(str(e))
+            response.send(str(e).encode())
         finally:
             clientsocket.close()
 
@@ -85,4 +96,12 @@ class Server:
     """
     def decrypt(self, decryptionKey, data):
         return data
+
+    
+
+    """
+     Generates random session ID
+    """
+    def generateSessionId(self):
+        return str(uuid.uuid1())
     
