@@ -9,10 +9,6 @@ from log import Log
 
 class Server:
 
-    serverSocket = None
-    port = None
-
-
     def __init__(self, portNumber):
         self.serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.port = portNumber
@@ -43,7 +39,7 @@ class Server:
     
 
     """
-     Logic for authenticating
+     TODO: Iron out authentication logic
     """
     def handleAuthRequest(self, clientsocket, clientaddress):
         try:
@@ -53,15 +49,16 @@ class Server:
 
             # 1. Client sends E_s(N_c)
             clientname = self.decrypt('', clientsocket.recv(8192).decode())
-            clientPublicKey = self.getClientPublicKey(clientname)
-            sessionKey = self.generateSessionId()
+            clientPublicKey = self.__getClientPublicKey(clientname)
+            sessionKey = self.generateSessionKey()
             response = self.encrypt(clientPublicKey, f"{clientname}, {sessionKey}")
             Log(response)
             clientsocket.send(response.encode())
 
         except Exception as e:
             Log(str(e))
-            response.send(str(e).encode())
+            clientsocket.send(str(e).encode())
+
         finally:
             clientsocket.close()
 
@@ -70,14 +67,13 @@ class Server:
     """
      Reads and returns the client's public key from the store
     """
-    def getClientPublicKey(self, client):
+    def __getClientPublicKey(self, client):
         try:
             self.lock.acquire()
             with open('clients.json', 'r') as file:
                 data = json.load(file)
                 return data[client]
-        except:
-            return "Error"
+
         finally:
             self.lock.release()
 
@@ -100,8 +96,8 @@ class Server:
     
 
     """
-     Generates random session ID
+     Generates random session key
     """
-    def generateSessionId(self):
+    def generateSessionKey(self):
         return str(uuid.uuid1())
     
