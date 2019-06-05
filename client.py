@@ -25,10 +25,17 @@ class Client:
     def __start(self):
         try:
             self.socket.connect( (socket.gethostname(), self.port) )
-            encryptedMessage = self.encrypt('', self.clientName)
-            self.socket.send(encryptedMessage.encode())
-            encryptedResponse = self.socket.recv(8192).decode()
-            print(encryptedResponse)
+            message = self.encrypt('', self.clientName)
+            self.socket.send(message.encode())
+            response = self.socket.recv(8192).decode()
+
+            # Response was correct
+            if (self.clientName == response[:response.find(',')]):
+                print(f"{response[:response.find(',')]}, {response[response.find(',')+1:]}")
+            else:
+                print("AUTHENTICATION FAILED")
+        except Exception as e:
+            Log(str(e))
         finally:
             self.socket.close()
 
@@ -50,7 +57,7 @@ class Client:
     def __getPrivateKey(self):
         with open('privatekey.json', 'r') as file:
             data = json.load(file)
-            return data[key]
+            return data['key']
 
 
 

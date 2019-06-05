@@ -51,7 +51,7 @@ class Server:
             clientname = self.decrypt('', clientsocket.recv(8192).decode())
             clientPublicKey = self.__getClientPublicKey(clientname)
             sessionKey = self.generateSessionKey()
-            response = self.encrypt(clientPublicKey, f"{clientname}, {sessionKey}")
+            response = self.encrypt(clientPublicKey, f"{clientname},{sessionKey}")
             Log(response)
             clientsocket.send(response.encode())
 
@@ -76,6 +76,16 @@ class Server:
 
         finally:
             self.lock.release()
+
+
+
+    """
+     Reads and returns the server's private key
+    """
+    def __getPrivateKey(self):
+        with open('privatekey.json', 'r') as file:
+            data = json.load(file)
+            return data['key']
 
 
 
