@@ -6,6 +6,7 @@ import threading
 import json
 import uuid
 from log import Log
+from Crypto.PublicKey import RSA
 
 class Server:
 
@@ -39,7 +40,7 @@ class Server:
     
 
     """
-     TODO: Iron out authentication logic
+     TODO: Add on-authentication behavior
     """
     def handleAuthRequest(self, clientsocket, clientaddress):
         try:
@@ -48,12 +49,10 @@ class Server:
             Log(f"Handling request from {hostname}.")
 
             # 1. Client sends E_s(N_c)
-            clientname = self.decrypt('', clientsocket.recv(8192).decode())
-            clientPublicKey = self.__getClientPublicKey(clientname)
+            clientname = self.decrypt(self.__getPrivateKey(), clientsocket.recv(8192)).decode()
             sessionKey = self.generateSessionKey()
-            response = self.encrypt(clientPublicKey, f"{clientname},{sessionKey}")
-            Log(response)
-            clientsocket.send(response.encode())
+            response = self.encrypt(self.__getClientPublicKey(clientname), f"{clientname},{sessionKey}")
+            clientsocket.send(response)
 
         except Exception as e:
             Log(str(e))
@@ -72,7 +71,9 @@ class Server:
             self.lock.acquire()
             with open('clients.json', 'r') as file:
                 data = json.load(file)
-                return data[client]
+                pemFileName = data[client]
+                with open(pemFileName, 'rb') as pemFile:
+                    return RSA.importKey(pemFile.read())
 
         finally:
             self.lock.release()
@@ -83,25 +84,24 @@ class Server:
      Reads and returns the server's private key
     """
     def __getPrivateKey(self):
-        with open('privatekey.json', 'r') as file:
-            data = json.load(file)
-            return data['key']
+        with open('server_private_key.pem', 'rb') as file:
+            return RSA.importKey(file.read())
 
 
 
     """
-     TODO: Actually encrypt the data
+     Encrypts data given an RSA public key
     """
     def encrypt(self, encryptionKey, data):
-        return data
+        return encryptionKey.encrypt(data.encode(), 32)[0]
 
 
     
     """
-     TODO: Actually decrypt the data
+     Decrypts data given an RSA private key
     """
     def decrypt(self, decryptionKey, data):
-        return data
+        return decryptionKey.decrypt(data)
 
     
 

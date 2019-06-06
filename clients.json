@@ -1,5 +1,3 @@
 {
-    "localhost": "publickey1",
-    "client2": "publickey2",
-    "Kevins-MBP.fios-router.home": "publickey3"
+    "test_client_name": "client_public_key.pem"
 }
