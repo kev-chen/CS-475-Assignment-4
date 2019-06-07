@@ -5,7 +5,6 @@ import socket
 import threading
 import json
 import uuid
-from log import Log
 from Crypto.PublicKey import RSA
 
 class Server:
@@ -25,9 +24,9 @@ class Server:
         try:
             self.serverSocket.bind((socket.gethostname(), self.port))
             self.serverSocket.listen(5)
-            Log(f"Started listening on port {self.port}...")
+            print(f"Started listening on port {self.port}...")
         except Exception as e:
-            Log(str(e))
+            print(str(e))
             quit()
 
         try:
@@ -35,7 +34,7 @@ class Server:
                 (clientsocket, clientaddress) = self.serverSocket.accept()
                 threading.Thread(target = self.handleAuthRequest(clientsocket, clientaddress)).start()
         except Exception as e:
-            Log(str(e))
+            print(str(e))
 
     
 
@@ -46,7 +45,7 @@ class Server:
         try:
             clientsocket.settimeout(10)
             hostname = socket.gethostbyaddr(clientaddress[0])[0] # => (hostname, alias-list, IP)
-            Log(f"Handling request from {hostname}.")
+            print(f"Handling request from {hostname}.")
 
             # 1. Client sends E_s(N_c)
             clientname = self.decrypt(self.__getPrivateKey(), clientsocket.recv(8192)).decode()
@@ -55,7 +54,7 @@ class Server:
             clientsocket.send(response)
 
         except Exception as e:
-            Log(str(e))
+            print(str(e))
             clientsocket.send(str(e).encode())
 
         finally:
