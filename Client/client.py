@@ -6,12 +6,13 @@ import threading
 import json
 import uuid
 from Crypto.PublicKey import RSA
+from config import Config
 
 class Client:
 
     def __init__(self, portNumber):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.clientName = 'test_client_name'
+        self.clientName = Config.setting('clientName')
 
 
 
@@ -30,10 +31,12 @@ class Client:
             # Get the response from the server, which is encyrpted with client's public key
             response = self.decrypt(self.__getPrivateKey(), self.socket.recv(8192)).decode()
 
+            returnedClientName = response[:response.find(',')]
+            returnedSessionKey = response[response.find(',')+1:]
+
             # Response was correct
-            if (self.clientName == response[:response.find(',')]):
-                sessionKey = response[response.find(',')+1:]
-                print(f"{response[:response.find(',')]}, {sessionKey}")
+            if (self.clientName == returnedClientName):
+                print(f"{returnedClientName}, {returnedSessionKey}")
             else:
                 raise Exception("AUTHENTICATION FAILED")
         except Exception as e:
