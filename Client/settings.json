@@ -1,6 +1,6 @@
 {
     "clientName": "test_client_name",
     "serverName": "ec2-52-32-60-227.us-west-2.compute.amazonaws.com", 
-    "serverPort": 8080,
+    "serverPort": 13456,
     "maxBufferSize": 8192
 }

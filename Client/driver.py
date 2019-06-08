@@ -10,7 +10,7 @@ if ( c.authenticate(Config.setting('serverName'), Config.setting('serverPort')) 
             resp = c.readCommand()
             if (resp != '\n'):
                 print(resp)
-            if (resp == 'Goodbye'):
+            if (resp == 'Goodbye' or resp == 'timed out'):
                 quit()
     finally:
         c.quit()
