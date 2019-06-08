@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import os
 import subprocess
 from config import Config
 
@@ -19,7 +18,7 @@ class Connection:
     """
      @param client = (clientsocket, clientaddress) as returned from a socket.accept()
     """
-    def __init__(self, client, privatekey):
+    def __init__(self, client):
         self.__clientsocket = client[0]
         self.__clientaddress = client[1]
 

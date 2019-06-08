@@ -58,7 +58,7 @@ class Server:
             clientsocket.send(response)
             
             # Start listening to commands
-            connection = Connection( (clientsocket, clientaddress), self.__getPrivateKey() )
+            connection = Connection( (clientsocket, clientaddress) )
             threading.Thread(target = connection.listen).start()
 
         except Exception as e:

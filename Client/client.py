@@ -39,13 +39,14 @@ class Client:
 
             # Response was correct
             if (self.clientName == returnedClientName):
+                print(f"Successfully authorized. Server response: {response}")
                 self.__authenticated = True
                 return True
             else:
-                raise Exception("AUTHENTICATION FAILED")
+                raise Exception("Authentication Failed")
 
         except Exception as e:
-            print(str(e))
+            print("Authentication Failed")
             return False
 
 
