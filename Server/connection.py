@@ -11,7 +11,7 @@ class Connection:
 
     __clientsocket = None
     __clientaddress = None
-    __availableCommands = set(['ls', 'mkdir', 'touch', 'cat', 'mv', 'cp', 'rm', 'rmdir', 'quit', 'pwd'])
+    __availableCommands = set(['ls', 'quit', 'pwd'])
 
 
 
