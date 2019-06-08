@@ -45,7 +45,10 @@ Otherwise, failing authentication will be met with:
   ```
     Authentication Failed
   ```
-Failing authentication could be caused by no server listening for requests, if any of the keys have been modified, or the client name has changed.
+You can cause authentication to fail by:
+- Deleting a row from any *.pem file
+- Deleting any *.pem file
+- Changing the `clientName` key in `Client/settings.json`
 
 Upon a successful connection, there are three commands: `ls`, `pwd`, and `quit` that will be executed on the server machine.
 
