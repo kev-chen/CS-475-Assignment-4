@@ -10,7 +10,7 @@ from config import Config
 
 class Client:
 
-    def __init__(self, portNumber):
+    def __init__(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.clientName = Config.setting('clientName')
 
@@ -18,7 +18,6 @@ class Client:
 
     """
      Sends the initial authentication request to the server
-     TODO: Remove the finally block and add on-authenticated behavior
     """
     def authenticate(self, serverHost, port):
         try:
@@ -36,13 +35,13 @@ class Client:
 
             # Response was correct
             if (self.clientName == returnedClientName):
-                print(f"{returnedClientName}, {returnedSessionKey}")
+                return True
             else:
                 raise Exception("AUTHENTICATION FAILED")
+
         except Exception as e:
             print(str(e))
-        finally:
-            self.socket.close()
+            return False
 
 
 
@@ -77,3 +76,14 @@ class Client:
     """
     def decrypt(self, decryptionKey, data):
         return decryptionKey.decrypt(data)
+
+
+    
+    """
+     Send commands to the server
+    """
+    def readCommand(self, serverHost):
+        command = input(f'{serverHost}> ')
+        command = command.encode()
+        self.socket.send(command)
+        return self.socket.recv(8192).decode()

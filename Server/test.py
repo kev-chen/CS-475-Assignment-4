@@ -1,2 +1,3 @@
 from server import Server
-s = Server(3002)
+from config import Config
+s = Server(Config.setting('serverPort'))

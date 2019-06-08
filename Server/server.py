@@ -5,7 +5,9 @@ import socket
 import threading
 import json
 import uuid
+import subprocess
 from Crypto.PublicKey import RSA
+from connection import Connection
 
 class Server:
 
@@ -33,31 +35,35 @@ class Server:
             while True:
                 (clientsocket, clientaddress) = self.serverSocket.accept()
                 threading.Thread(target = self.handleAuthRequest(clientsocket, clientaddress)).start()
+
         except Exception as e:
             print(str(e))
 
     
 
     """
-     TODO: Add on-authentication behavior
+     Handles authentication request from a client
     """
     def handleAuthRequest(self, clientsocket, clientaddress):
         try:
-            clientsocket.settimeout(10)
             hostname = socket.gethostbyaddr(clientaddress[0])[0] # => (hostname, alias-list, IP)
             print(f"Handling request from {hostname}.")
 
             # 1. Client sends E_s(N_c)
             clientname = self.decrypt(self.__getPrivateKey(), clientsocket.recv(8192)).decode()
             sessionKey = self.generateSessionKey()
+
+            # An exception will be raised if decryption fails or client not found
             response = self.encrypt(self.__getClientPublicKey(clientname), f"{clientname},{sessionKey}")
             clientsocket.send(response)
+            
+            # Start listening to commands
+            connection = Connection( (clientsocket, clientaddress), self.__getPrivateKey() )
+            connection.listen()
 
         except Exception as e:
             print(str(e))
             clientsocket.send(str(e).encode())
-
-        finally:
             clientsocket.close()
 
 
@@ -109,4 +115,3 @@ class Server:
     """
     def generateSessionKey(self):
         return str(uuid.uuid1())
-    

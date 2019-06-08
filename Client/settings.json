@@ -1,3 +1,5 @@
 {
-    "clientName": "test_client_name"
+    "clientName": "test_client_name",
+    "serverName": "Kevins-MBP.fios-router.home",
+    "serverPort": 3003
 }
