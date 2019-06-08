@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from client import Client
 from config import Config
 import socket
