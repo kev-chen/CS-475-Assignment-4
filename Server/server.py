@@ -34,7 +34,7 @@ class Server:
         try:
             while True:
                 (clientsocket, clientaddress) = self.serverSocket.accept()
-                threading.Thread(target = self.handleAuthRequest(clientsocket, clientaddress)).start()
+                threading.Thread(target = self.handleAuthRequest, args=(clientsocket, clientaddress)).start()
 
         except Exception as e:
             print(str(e))
@@ -59,7 +59,7 @@ class Server:
             
             # Start listening to commands
             connection = Connection( (clientsocket, clientaddress), self.__getPrivateKey() )
-            connection.listen()
+            threading.Thread(target = connection.listen).start()
 
         except Exception as e:
             print(str(e))
