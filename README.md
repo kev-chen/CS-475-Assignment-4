@@ -19,6 +19,8 @@ The encryption/decryption is reliant on:
 
 There is only one client set up in the server's clients list, which the client will take the name of by default.
 
+Note: Port 13456 must be used when connecting to the EC2 instance.
+
 
 ## Usage
 Make sure the pycrypto module is installed by running 
