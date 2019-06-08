@@ -1,5 +1,6 @@
 {
     "clientName": "test_client_name",
-    "serverName": "Kevins-MBP.fios-router.home",
-    "serverPort": 3003
+    "serverName": "Kevins-MBP.fios-router.home", 
+    "serverPort": 8080,
+    "maxBufferSize": 8192
 }

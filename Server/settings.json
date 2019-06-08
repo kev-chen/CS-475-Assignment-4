@@ -1,3 +1,5 @@
 {
-    "serverPort": 3003
+    "serverPort": 8080,
+    "maxBufferSize": 8192,
+    "clientTimeout": 300
 }

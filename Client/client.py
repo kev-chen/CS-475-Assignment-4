@@ -10,9 +10,13 @@ from config import Config
 
 class Client:
 
+    __BUFFER_SIZE = Config.setting('maxBufferSize')
+
     def __init__(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.clientName = Config.setting('clientName')
+        self.__serverName = None
+        self.__authenticated = False
 
 
 
@@ -22,19 +26,20 @@ class Client:
     def authenticate(self, serverHost, port):
         try:
             self.socket.connect( (serverHost, port) )
-
+            self.__serverName = serverHost
             # Send the client name encrypted with the server's public key
             message = self.encrypt(self.__getServerPublicKey(), self.clientName)
             self.socket.send(message)
 
             # Get the response from the server, which is encyrpted with client's public key
-            response = self.decrypt(self.__getPrivateKey(), self.socket.recv(8192)).decode()
+            response = self.decrypt(self.__getPrivateKey(), self.socket.recv(self.__BUFFER_SIZE)).decode()
 
             returnedClientName = response[:response.find(',')]
             returnedSessionKey = response[response.find(',')+1:]
 
             # Response was correct
             if (self.clientName == returnedClientName):
+                self.__authenticated = True
                 return True
             else:
                 raise Exception("AUTHENTICATION FAILED")
@@ -82,8 +87,22 @@ class Client:
     """
      Send commands to the server
     """
-    def readCommand(self, serverHost):
-        command = input(f'{serverHost}> ')
-        command = command.encode()
-        self.socket.send(command)
-        return self.socket.recv(8192).decode()
+    def readCommand(self):
+        command = input(f'{self.__serverName}> ')
+        if (self.__authenticated):
+            command = command.encode()
+            self.socket.send(command)
+            return self.socket.recv(self.__BUFFER_SIZE).decode()
+        else:
+            return 'Not connected'
+
+
+    
+    """
+     Quits the client and cleans up connections
+    """
+    def quit(self):
+        self.__authenticated = False
+        if (self.socket != None):
+            self.socket.close()
+            self.socket = None
