@@ -111,7 +111,7 @@ The `authenticate` function in `client.py` houses the authentication protocol as
 
 # Test Plan
 ## Overview
-There are several scenariors for both the client and the server, particularly green light scenarios and authentication failures involving invalid client private key, client public key, server private key, and server public key, and invalid client name.
+There are several scenariors for both the client and the server, particularly green light scenarios and authentication failures involving invalid client private key, client public key, server private key, and server public key, and adding a second client.
 
 ## Test Case 1: Greenlight on EC2 Instance
 | Client | Server |
@@ -139,7 +139,6 @@ There are several scenariors for both the client and the server, particularly gr
 ## Test Case 3: Invalid Client Private Key on Tux
 | Client | Server |
 | ------ | ------ |
-|| 
 | In `./Client`: Run `cp client_private_key.pem backup` <br> (Enter `y` to overwrite if prompted) ||
 | Delete a row from `./Client/client_private_key.pem` ||
 | In `./Client`: Run `python3 driver.py` <br><br> <b>Expected</b>: `Authentication Failed` ||
