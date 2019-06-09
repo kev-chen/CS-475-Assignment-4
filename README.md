@@ -107,3 +107,27 @@ The Crypto.PublicKey.RSA python module is used to generate public/private key pa
 
 ## Core Logic
 The `authenticate` function in `client.py` houses the authentication protocol as defined in the assignment and explained in the Overview section, and the `handleAuthRequest` function in `server.py` does the same for the server portion.
+
+
+# Test Plan
+## Overview
+
+
+## Run Through
+| Client | Server |
+| ------ | ------ |
+| In `./Client`: Run `python3 driver.py` <br> Expected: `Successfully authorized. Server response: test_client_name,<session_key>` <br> `ec2-52-32-60-227.us-west-2.compute.amazonaws.com>`||
+| Run: `ls` <br> Expected: Server directory listed ||
+| Run: `ls ..` <br> Expected: Server parent directory listed ||
+| Run: `pwd` <br> Expected: `/home/ubuntu/CS-475-Assignment-4/Server` ||
+| Run: `quit` <br> Expected: `Goodbye`||
+|| In `./Server`: Run `python3 driver.py`|
+|| Run `hostname` from working directory
+| Open `./Client/settings.json` and modify the `"serverName"` key with `hostname`||
+| In `./Client`: Run `python3 driver.py` <br> Expected: `Successfully authorized. Server response: test_client_name,<session_key>` <br> `hostname>` | Expected: `Handling request from <client_hostname>` (actual hostname, not clientname) |
+| Run: `ls` <br> Expected: Server directory listed ||
+| Run: `ls ..` <br> Expected: Server parent directory listed ||
+| Run: `pwd` <br> Expected: Working directory printed
+| Run: `quit` <br> Expected: `Goodbye`||
+| In `./Client`: Run `cat client_private_key.pem > backup` ||
+| Delete a row from `./Client/client_private_key.pem` ||
