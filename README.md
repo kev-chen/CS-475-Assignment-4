@@ -100,7 +100,7 @@ Keys and clients can be added and used as well by generating new keys, though th
 ## Communication
 The client and server communicate over socket connections. The client immediately attempts to connect to the server upon starting. The server will listen and handle up to 5 clients concurrently. Each time a connection is accepted, the server kicks off a new thread to handle authentication protocol.
 
-On successful authentication, the application-level connection is established and the client can explore the server with the `ls` or `pwd` commands. These are read-only commands that act as a proof of concept to test that the authentication behavior is acting as expected. They are simple enough for easy communication over sockets and would not allow for a mistake such as deleting the server's private key file, which would make authentication fail every time.
+On successful authentication, the application-level connection is established and the client can explore the server with the `ls` or `pwd` commands. These are read-only commands that act as a proof of concept to test that the authentication behavior is acting as <b>Expected</b>. They are simple enough for easy communication over sockets and would not allow for a mistake such as deleting the server's private key file, which would make authentication fail every time.
 
 ## Keys and Crypto
 The Crypto.PublicKey.RSA python module is used to generate public/private key pairs and encrypt/decrypt data.
@@ -111,23 +111,53 @@ The `authenticate` function in `client.py` houses the authentication protocol as
 
 # Test Plan
 ## Overview
+There are several scenariors for both the client and the server, particularly green light scenarios and authentication failures involving invalid client private key, client public key, server private key, and server public key, and invalid client name.
 
-
-## Run Through
+## Test steps
 | Client | Server |
 | ------ | ------ |
-| In `./Client`: Run `python3 driver.py` <br> Expected: `Successfully authorized. Server response: test_client_name,<session_key>` <br> `ec2-52-32-60-227.us-west-2.compute.amazonaws.com>`||
-| Run: `ls` <br> Expected: Server directory listed ||
-| Run: `ls ..` <br> Expected: Server parent directory listed ||
-| Run: `pwd` <br> Expected: `/home/ubuntu/CS-475-Assignment-4/Server` ||
-| Run: `quit` <br> Expected: `Goodbye`||
-|| In `./Server`: Run `python3 driver.py`|
+| In `./Client`: Run `python3 driver.py` <br><br> <b>Expected</b>: `Successfully authorized. Server response: test_client_name,<session_key>` <br> `ec2-52-32-60-227.us-west-2.compute.amazonaws.com>`||
+| Run: `ls` <br><br> <b>Expected</b>: Server directory listed ||
+| Run: `ls ..` <br><br> <b>Expected</b>: Server parent directory listed ||
+| Run: `pwd` <br><br> <b>Expected</b>: `/home/ubuntu/CS-475-Assignment-4/Server` ||
+| Run: `quit` <br><br> <b>Expected</b>: `Goodbye`||
+|| In `./Server`: Run `python3 driver.py &` <br><br> <b>Expected</b>: `Started listening on port 13456...` |
 || Run `hostname` from working directory
-| Open `./Client/settings.json` and modify the `"serverName"` key with `hostname`||
-| In `./Client`: Run `python3 driver.py` <br> Expected: `Successfully authorized. Server response: test_client_name,<session_key>` <br> `hostname>` | Expected: `Handling request from <client_hostname>` (actual hostname, not clientname) |
-| Run: `ls` <br> Expected: Server directory listed ||
-| Run: `ls ..` <br> Expected: Server parent directory listed ||
-| Run: `pwd` <br> Expected: Working directory printed
-| Run: `quit` <br> Expected: `Goodbye`||
-| In `./Client`: Run `cat client_private_key.pem > backup` ||
+| Open `./Client/settings.json` and change the value of the `"serverName"` key to `hostname` <br> (If the Server is running on tux, make sure to run the Client on tux as well) ||
+| In `./Client`: Run `python3 driver.py` <br><br> <b>Expected</b>: `Successfully authorized. Server response: test_client_name,<session_key>` <br> `hostname>` | <b>Expected</b>: `Handling request from <client_hostname>` (actual hostname, not clientname) |
+| Run: `ls` <br><br> <b>Expected</b>: Server directory listed ||
+| Run: `ls ..` <br><br> <b>Expected</b>: Server parent directory listed ||
+| Run: `pwd` <br><br> <b>Expected</b>: Working directory printed
+| Run: `quit` <br><br> <b>Expected</b>: `Goodbye`||
+| In `./Client`: Run `cp client_private_key.pem backup` <br> (Enter `y` to overwrite if prompted) ||
 | Delete a row from `./Client/client_private_key.pem` ||
+| In `./Client`: Run `python3 driver.py` <br><br> <b>Expected</b>: `Authentication Failed` ||
+| In `./Client`: Run `cp backup client_private_key.pem` <br> (Enter `y` to overwrite if prompted) ||
+| In `./Client`: Run `python3 driver.py` <br><br> <b>Expected</b>: `Successfully authorized. Server response: test_client_name,<session_key>` <br> `hostname>` | <b>Expected</b>: `Handling request from <client_hostname>` (actual hostname, not clientname) |
+| Run: `quit` <br><br> <b>Expected</b>: `Goodbye`||
+|| In `./Server`: Run `cp client_public_key.pem backup` <br> (Enter `y` to overwrite if prompted) |
+|| Delete a row from `./Server/client_public_key.pem` ||
+| In `./Client`: Run `python3 driver.py` <br><br> <b>Expected</b>: `Authentication Failed` ||
+|| In `./Server`: Run `cp backup client_public_key.pem` <br> (Enter `y` to overwrite if prompted) |
+| In `./Client`: Run `python3 driver.py` <br><br> <b>Expected</b>: `Successfully authorized. Server response: test_client_name,<session_key>` <br> `hostname>` | <b>Expected</b>: `Handling request from <client_hostname>` (actual hostname, not clientname) |
+| Run: `quit` <br><br> <b>Expected</b>: `Goodbye`||
+|| In `./Server`: Run `cp server_private_key.pem backup` (Enter `y` to overwrite if prompted) |
+|| Delete a line from `./Server/server_private_key.pem` |
+| In `./Client`: Run `python3 driver.py` <br><br> <b>Expected</b>: `Authentication Failed` ||
+|| In `./Server`: Run `cp backup server_private_key.pem` (Enter `y` to overwrite if prompted) |
+| In `./Client`: Run `python3 driver.py` <br><br> <b>Expected</b>: `Successfully authorized. Server response: test_client_name,<session_key>` <br> `hostname>` | <b>Expected</b>: `Handling request from <client_hostname>` (actual hostname, not clientname) |
+| Run: `quit` <br><br> <b>Expected</b>: `Goodbye`||
+| In `./Client`: Run `cp server_public_key.pem backup` (Enter `y` to overwrite if prompted) ||
+| Delete a line from `./Client/server_public_key.pem` ||
+| In `./Client`: Run `python3 driver.py` <br><br> <b>Expected</b>: `Authentication Failed` ||
+| In `./Client`: Run `cp backup server_public_key.pem` ||
+| In `./Client`: Run `python3 driver.py` <br><br> <b>Expected</b>: `Successfully authorized. Server response: test_client_name,<session_key>` <br> `hostname>` | <b>Expected</b>: `Handling request from <client_hostname>` (actual hostname, not clientname) |
+| Run: `quit` <br><br> <b>Expected</b>: `Goodbye`||
+| Open `./Client/settings.json` and change the value of the `"clientName"` key to `client2` ||
+| In `./Client`: Run `python3 driver.py` <br><br> <b>Expected</b>: `Authentication Failed` ||
+|| In `.` : Run `python3 keygen.py client2private.pem client2public.pem` |
+| In `.` : Run `mv client2private.pem Client` |
+| Open `./Client/settings.json` and change the value of the `"clientPrivateKey"` key to `client2private.pem` ||
+|| In `.` : Run `mv client2public.pem Server` |
+|| Open `./Server/clients.json` and add the following entry: `"client2": "client2public.pem"` |
+| In `./Client`: Run `python3 driver.py` <br><br> <b>Expected</b>: `Successfully authorized. Server response: client2,<session_key>` <br> `hostname>` | <b>Expected</b>: `Handling request from <client_hostname>` (actual hostname, not clientname) |
