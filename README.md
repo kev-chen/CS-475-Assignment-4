@@ -113,14 +113,19 @@ The `authenticate` function in `client.py` houses the authentication protocol as
 ## Overview
 There are several scenariors for both the client and the server, particularly green light scenarios and authentication failures involving invalid client private key, client public key, server private key, and server public key, and invalid client name.
 
-## Test steps
+## Test Case 1: Greenlight on EC2 Instance
 | Client | Server |
 | ------ | ------ |
 | In `./Client`: Run `python3 driver.py` <br><br> <b>Expected</b>: `Successfully authorized. Server response: test_client_name,<session_key>` <br> `ec2-52-32-60-227.us-west-2.compute.amazonaws.com>`||
 | Run: `ls` <br><br> <b>Expected</b>: Server directory listed ||
 | Run: `ls ..` <br><br> <b>Expected</b>: Server parent directory listed ||
 | Run: `pwd` <br><br> <b>Expected</b>: `/home/ubuntu/CS-475-Assignment-4/Server` ||
-| Run: `quit` <br><br> <b>Expected</b>: `Goodbye`||
+| Run: `quit` <br><br> <b>Expected</b>: `Goodbye` ||
+
+
+## Test Case 2: Greenlight on Tux
+| Client | Server |
+| ------ | ------ |
 || In `./Server`: Run `python3 driver.py &` <br><br> <b>Expected</b>: `Started listening on port 13456...` |
 || Run `hostname` from working directory
 | Open `./Client/settings.json` and change the value of the `"serverName"` key to `hostname` <br> (If the Server is running on tux, make sure to run the Client on tux as well) ||
@@ -128,31 +133,57 @@ There are several scenariors for both the client and the server, particularly gr
 | Run: `ls` <br><br> <b>Expected</b>: Server directory listed ||
 | Run: `ls ..` <br><br> <b>Expected</b>: Server parent directory listed ||
 | Run: `pwd` <br><br> <b>Expected</b>: Working directory printed
-| Run: `quit` <br><br> <b>Expected</b>: `Goodbye`||
+| Run: `quit` <br><br> <b>Expected</b>: `Goodbye`|
+|| (<b><i>Keep Server running</i></b>) |
+
+## Test Case 3: Invalid Client Private Key on Tux
+| Client | Server |
+| ------ | ------ |
+|| 
 | In `./Client`: Run `cp client_private_key.pem backup` <br> (Enter `y` to overwrite if prompted) ||
 | Delete a row from `./Client/client_private_key.pem` ||
 | In `./Client`: Run `python3 driver.py` <br><br> <b>Expected</b>: `Authentication Failed` ||
 | In `./Client`: Run `cp backup client_private_key.pem` <br> (Enter `y` to overwrite if prompted) ||
 | In `./Client`: Run `python3 driver.py` <br><br> <b>Expected</b>: `Successfully authorized. Server response: test_client_name,<session_key>` <br> `hostname>` | <b>Expected</b>: `Handling request from <client_hostname>` (actual hostname, not clientname) |
 | Run: `quit` <br><br> <b>Expected</b>: `Goodbye`||
+|| (<b><i>Keep Server running</i></b>) |
+
+## Test Case 4: Invalid Client Public Key on Tux
+| Client | Server |
+| ------ | ------ |
 || In `./Server`: Run `cp client_public_key.pem backup` <br> (Enter `y` to overwrite if prompted) |
 || Delete a row from `./Server/client_public_key.pem` ||
 | In `./Client`: Run `python3 driver.py` <br><br> <b>Expected</b>: `Authentication Failed` ||
 || In `./Server`: Run `cp backup client_public_key.pem` <br> (Enter `y` to overwrite if prompted) |
 | In `./Client`: Run `python3 driver.py` <br><br> <b>Expected</b>: `Successfully authorized. Server response: test_client_name,<session_key>` <br> `hostname>` | <b>Expected</b>: `Handling request from <client_hostname>` (actual hostname, not clientname) |
 | Run: `quit` <br><br> <b>Expected</b>: `Goodbye`||
+|| (<b><i>Keep Server running</i></b>) |
+
+## Test Case 5: Invalid Server Private Key on Tux
+| Client | Server |
+| ------ | ------ |
 || In `./Server`: Run `cp server_private_key.pem backup` (Enter `y` to overwrite if prompted) |
 || Delete a line from `./Server/server_private_key.pem` |
 | In `./Client`: Run `python3 driver.py` <br><br> <b>Expected</b>: `Authentication Failed` ||
 || In `./Server`: Run `cp backup server_private_key.pem` (Enter `y` to overwrite if prompted) |
 | In `./Client`: Run `python3 driver.py` <br><br> <b>Expected</b>: `Successfully authorized. Server response: test_client_name,<session_key>` <br> `hostname>` | <b>Expected</b>: `Handling request from <client_hostname>` (actual hostname, not clientname) |
 | Run: `quit` <br><br> <b>Expected</b>: `Goodbye`||
+|| (<b><i>Keep Server running</i></b>) |
+
+## Test Case 6: Invalid Server Public Key on Tux
+| Client | Server |
+| ------ | ------ |
 | In `./Client`: Run `cp server_public_key.pem backup` (Enter `y` to overwrite if prompted) ||
 | Delete a line from `./Client/server_public_key.pem` ||
 | In `./Client`: Run `python3 driver.py` <br><br> <b>Expected</b>: `Authentication Failed` ||
 | In `./Client`: Run `cp backup server_public_key.pem` ||
 | In `./Client`: Run `python3 driver.py` <br><br> <b>Expected</b>: `Successfully authorized. Server response: test_client_name,<session_key>` <br> `hostname>` | <b>Expected</b>: `Handling request from <client_hostname>` (actual hostname, not clientname) |
 | Run: `quit` <br><br> <b>Expected</b>: `Goodbye`||
+|| (<b><i>Keep Server running</i></b>) |
+
+## Test Case 7: Adding a Second Client
+| Client | Server |
+| ------ | ------ |
 | Open `./Client/settings.json` and change the value of the `"clientName"` key to `client2` ||
 | In `./Client`: Run `python3 driver.py` <br><br> <b>Expected</b>: `Authentication Failed` ||
 || In `.` : Run `python3 keygen.py client2private.pem client2public.pem` |
