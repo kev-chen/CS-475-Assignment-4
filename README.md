@@ -96,3 +96,14 @@ Keys and clients can be added and used as well by generating new keys, though th
 4. In `Client/settings.json`, change the `clientName` key value to a new name
 5. In `Client/settings.json`, change the `clientPrivateKey` value to `<private_key_name.pem>`
 6. In `Server/clients.json`, add a key-value pair for the new `clientName: <public_key_name.pem>`
+
+## Communication
+The client and server communicate over socket connections. The client immediately attempts to connect to the server upon starting. The server will listen and handle up to 5 clients concurrently. Each time a connection is accepted, the server kicks off a new thread to handle authentication protocol.
+
+On successful authentication, the application-level connection is established and the client can explore the server with the `ls` or `pwd` commands. These are read-only commands that act as a proof of concept to test that the authentication behavior is acting as expected. They are simple enough for easy communication over sockets and would not allow for a mistake such as deleting the server's private key file, which would make authentication fail every time.
+
+## Keys and Crypto
+The Crypto.PublicKey.RSA python module is used to generate public/private key pairs and encrypt/decrypt data.
+
+## Core Logic
+The `authenticate` function in `client.py` houses the authentication protocol as defined in the assignment and explained in the Overview section, and the `handleAuthRequest` function in `server.py` does the same for the server portion.
