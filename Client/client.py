@@ -17,6 +17,7 @@ class Client:
         self.clientName = Config.setting('clientName')
         self.__serverName = None
         self.__authenticated = False
+        self.__sessionKey = None
 
 
 
@@ -41,6 +42,7 @@ class Client:
             if (self.clientName == returnedClientName):
                 print(f"Successfully authorized. Server response: {response}")
                 self.__authenticated = True
+                self.__sessionKey = returnedSessionKey 
                 return True
             else:
                 raise Exception("Authentication Failed")
@@ -91,6 +93,7 @@ class Client:
     def readCommand(self):
         command = input(f'{self.__serverName}> ')
         if (self.__authenticated):
+            command = f'{self.__sessionKey}:{command}'
             command = command.encode()
             self.socket.send(command)
             return self.socket.recv(self.__BUFFER_SIZE).decode()
