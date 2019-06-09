@@ -194,10 +194,10 @@ There are several scenariors for both the client and the server, particularly gr
 | ------ | ------ |
 | Open `./Client/settings.json` and change the value of the `"clientName"` key to `client2` ||
 | In `./Client`: Run `python3 driver.py` <br><br> <b>Expected</b>: `Authentication Failed` ||
-|| In `.` : Run `python3 keygen.py client2private.pem client2public.pem` |
-| In `.` : Run `mv client2private.pem Client` |
+|| In the root directory : Run `python3 keygen.py client2private.pem client2public.pem` |
+| In the root directory : Run `mv client2private.pem Client` |
 | Open `./Client/settings.json` and change the value of the `"clientPrivateKey"` key to `client2private.pem` ||
-|| In `.` : Run `mv client2public.pem Server` |
+|| In the root directory: Run `mv client2public.pem Server` |
 || Open `./Server/clients.json` and add the following entry: `"client2": "client2public.pem"` |
 | In `./Client`: Run `python3 driver.py` <br><br> <b>Expected</b>: `Successfully authorized. Server response: client2,<session_key>` <br> `hostname>` | <b>Expected</b>: `Handling request from <client_hostname>` (actual hostname, not clientname) |
 
