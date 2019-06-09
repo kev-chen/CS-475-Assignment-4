@@ -1,7 +1,7 @@
 {
     "clientName": "test_client_name",
     "clientPrivateKey": "client_private_key.pem",
-    "serverName": "Kevins-MBP.fios-router.home", 
+    "serverName": "ec2-52-32-60-227.us-west-2.compute.amazonaws.com", 
     "serverPort": 13456,
     "serverPublicKey": "server_public_key.pem",
     "maxBufferSize": 8192
