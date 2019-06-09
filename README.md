@@ -75,7 +75,24 @@ In this implementation, there is one client and one server. The client has acces
 
 The client starts by using the server's public key to encrypt the client name and sends that to the server. The server receives the message and decrypts with its private key. If there is any issue with decrypting, then authentication fails. Upon succesfully decrypting the client's message, the server takes the decrypted client name and looks up the public key associated with the client. If there is no such client, then authentication fails. If there is such a client, then the server responds with the client name and a session key, encrypted with the client's public key, and will start listening for commands from this client. The client, upon receiving the server's response, will decrypt with its private key and check if the client name is included in the response. If it is, that means the server was able to successfully decrypt the initial response, proving its identity.
 
+## The Server
+There is an instance of the server code running in the cloud on an AWS EC2 instance. The client is set up to be configurable to change which host to try connecting to by modifying the value for the `serverName` key in `Client/settings.json`. 
+
+To run both the client and server on your local machine:
+1. Run `hostname` from the command line
+2. Use that host name as the value for `serverName` in `Client/settings.json`
+
 ## Client Information
 The client name is configurable via the `clientName` key in `Client/settings.json`. The client will take the value of this key and use it as its N_c value to encrypt and send to the server.
 
-The server has a list of clients stored in `Server/clients.json`, storing key-value pairs of client names and paths to public key stores.
+The server has a list of clients stored in `Server/clients.json`, storing key-value pairs of client names and paths to public key stores (*.pem).
+
+Since there is only one known client to the server in this implementation, the value of `clientName` (`test_client_name`) in `Client/settings.json` must match the key in `Server/clients.json`, along with the corresponding value being the appropriate *.pem file (`client_public_key.pem`).
+
+Keys and clients can be added and used as well by generating new keys, though this can only be seen when running the server locally since adding a new client would involve adding a new key on the cloud server. 
+1. Run `python3 keygen.py <private_key_name.pem> <public_key_name_.pem>`
+2. Place the newly generated `<private_key_name.pem>` file in the `Client` directory
+3. Place the newly generated `<public_key_name.pem>` file in the `Server` directory
+4. In `Client/settings.json`, change the `clientName` key value to a new name
+5. In `Client/settings.json`, change the `clientPrivateKey` value to `<private_key_name.pem>`
+6. In `Server/clients.json`, add a key-value pair for the new `clientName: <public_key_name.pem>`
