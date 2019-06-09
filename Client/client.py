@@ -55,7 +55,7 @@ class Client:
      Reads and returns the client's public key from the store
     """
     def __getServerPublicKey(self):
-        with open('server_public_key.pem', 'rb') as file:
+        with open(Config.setting('serverPublicKey'), 'rb') as file:
             return RSA.importKey(file.read())
 
     
@@ -64,7 +64,7 @@ class Client:
      Reads and returns the client's private key
     """
     def __getPrivateKey(self):
-        with open('client_private_key.pem', 'rb') as file:
+        with open(Config.setting('clientPrivateKey'), 'rb') as file:
             return RSA.importKey(file.read())
 
 
