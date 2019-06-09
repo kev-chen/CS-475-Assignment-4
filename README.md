@@ -57,3 +57,14 @@ Upon a successful connection, there are three commands: `ls`, `pwd`, and `quit` 
 
 The server should output `Started listening on port 13456...` when successfully started. 
 If running the server code from another machine, be sure to configure the client to connect to that machine in `Client/settings.json`. This setting can be configured to the output of running `hostname` if the server and client are running on the same machine.
+
+
+### Keygen
+To generate a new client keypair, configure client information, and add the new client to the server: <br>
+From the root directory:
+1.	Run `python3 keygen.py <private_key_name.pem> <public_key_name_.pem>`
+2.	Place the newly generated `<private_key_name.pem>` file in the `Client` directory
+3.	Place the newly generated `<public_key_name.pem>` file in the `Server` directory
+4.	In `Client/settings.json`, change the clientName key value to a new name
+5.	In `Client/settings.json`, change the clientPrivateKey value to `<private_key_name.pem>`
+6.	In Server/clients.json, add a key-value pair for the new clientName: `<public_key_name.pem>`
