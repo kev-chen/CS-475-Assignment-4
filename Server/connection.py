@@ -8,19 +8,16 @@ class Connection:
 
     __RECEIVE_TIMEOUT = Config.setting('clientTimeout')
     __BUFFER_SIZE = Config.setting('maxBufferSize')
-
-    __clientsocket = None
-    __clientaddress = None
-    __availableCommands = set(['ls', 'quit', 'pwd'])
-
+    __AVAILABLE_COMMANDS = set(['ls', 'quit', 'pwd'])
 
 
     """
      @param client = (clientsocket, clientaddress) as returned from a socket.accept()
     """
-    def __init__(self, client):
+    def __init__(self, client, sessionKey):
         self.__clientsocket = client[0]
         self.__clientaddress = client[1]
+        self.__sessionKey = sessionKey
 
         # Set a timeout to avoid hanging on reading from client Timeout errors 
         # on reading from socket are handled by handleRequests
@@ -58,11 +55,14 @@ class Connection:
      Executes bash commands, returns byte string
     """
     def __execute(self, commandString):
+        receivedSessionKey = commandString[:commandString.find(':')]
+        if (receivedSessionKey != self.__sessionKey):
+            raise Exception('Invalid session key. Closing connection.')
 
-        cmds = [x.lower() for x in commandString.strip().split()]
+        cmds = [x.lower() for x in commandString[commandString.find(':')+1:].strip().split()]
 
-        if (cmds[0] not in self.__availableCommands): 
-            return f"Command not recognized. Available commands: {self.__availableCommands}".encode()
+        if (cmds[0] not in self.__AVAILABLE_COMMANDS): 
+            return f"Command not recognized. Available commands: {self.__AVAILABLE_COMMANDS}".encode()
         
         if (cmds[0] == 'quit'):
             return 'Goodbye'.encode()
