@@ -1,9 +1,5 @@
-[//]: # (Kevin Chen)
-[//]: # (Assignment 4)
-[//]: # (CS 475)
+# Simple Network Security Protocol
 
-# CS-475-Assignment-4
-Simple Network Security Protocol
 
 
 ## Configuration
